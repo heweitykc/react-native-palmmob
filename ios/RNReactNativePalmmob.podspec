@@ -4,7 +4,7 @@ Pod::Spec.new do |s|
   s.version      = "1.0.0"
   s.summary      = "RNReactNativePalmmob"
   s.description  = <<-DESC
-                  RNReactNativePalmmob
+                  RNReactNativePalmmob very well
                    DESC
   s.homepage     = "http://www.palmmob.com/"
   s.license      = "MIT"
