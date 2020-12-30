@@ -1,0 +1,6 @@
+framework module DyTaskSdk {
+  umbrella header "DyTaskSdk.h"
+
+  export *
+  module * { export * }
+}
