@@ -43,3 +43,32 @@ import RNReactNativePalmmob from 'react-native-react-native-palmmob';
 RNReactNativePalmmob;
 ```
   
+
+
+主项目需要忽略的
+
+-dontoptimize
+-dontpreverify
+-dontwarn com.duoyou.**
+-keep class com.duoyou.**{*;}
+-keep class **.R$* {
+ 	*;
+}
+-keepclassmembers class **.R$* {
+	public static <fields>;
+}
+
+-keep class XI.CA.XI.**{*;}
+-keep class XI.K0.XI.**{*;}
+-keep class XI.XI.K0.**{*;}
+-keep class XI.vs.K0.**{*;}
+-keep class XI.xo.XI.XI.**{*;}
+-keep class com.asus.msa.SupplementaryDID.**{*;}
+-keep class com.asus.msa.sdid.**{*;}
+-keep class com.bun.lib.**{*;}
+-keep class com.bun.miitmdid.**{*;}
+-keep class com.huawei.hms.ads.identifier.**{*;}
+-keep class com.samsung.android.deviceidservice.**{*;}
+-keep class org.json.**{*;}
+-keep public class com.netease.nis.sdkwrapper.Utils {public <methods>;}
+

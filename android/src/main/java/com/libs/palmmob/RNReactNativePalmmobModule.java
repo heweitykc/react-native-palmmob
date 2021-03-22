@@ -1,8 +1,10 @@
 
-package com.reactlibrary;
+package com.libs.palmmob;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
+import android.util.Log;
 import android.widget.Toast;
 import android.content.ClipboardManager;
 import android.content.ClipData;
@@ -10,10 +12,13 @@ import android.text.TextUtils;
 import android.content.Intent;
 import android.content.ComponentName;
 
+import androidx.annotation.NonNull;
+
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Callback;
+import com.libs.palmmob.oaid.MiitHelper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -68,17 +73,6 @@ public class RNReactNativePalmmobModule extends ReactContextBaseJavaModule {
   public void show( String msg, int duration ){
     Toast.makeText(getReactApplicationContext(), msg, duration).show();
   }
-
-
-//  @ReactMethod
-//  public String getCopyData(){
-//    ClipboardManager clip = (ClipboardManager)getReactApplicationContext().getCurrentActivity().getSystemService(reactContext.CLIPBOARD_SERVICE);
-//    String text = clip.getText().toString();
-//    if(text == null){
-//      text = "";
-//    }
-//    return text;
-//  }
 
   @ReactMethod
   public String getCopyData(){

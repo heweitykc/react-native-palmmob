@@ -1,6 +1,10 @@
 
 import { NativeModules } from 'react-native';
 
-const { RNReactNativePalmmob } = NativeModules;
+const { RNReactNativePalmmob, OAIDUtil } = NativeModules;
 
-export default RNReactNativePalmmob;
+export {
+    OAIDUtil,
+    DyAdApi,
+    RNReactNativePalmmob
+} 
