@@ -47,10 +47,6 @@ function jumpAdList(){
   DyAdApi.jumpAdList(uid,0)
 }
 
-function openapp(){
-  DyAdApi.jumpAdDetail(uid,100)
-}
-
 function jumpMine(){
   DyAdApi.jumpMine(uid)
 }
@@ -74,14 +70,11 @@ const App: () => React$Node = () => {
               <Text>{'测试OAID>'}</Text>
             </TouchableHighlight>   
             <TouchableHighlight style={styles.login_phone} underlayColor='transparent' activeOpacity={0.95} onPress={initGame}>
-              <Text>{'游戏试玩>'}</Text>
+              <Text>{'初始化游戏试玩>'}</Text>
             </TouchableHighlight>
             <TouchableHighlight style={styles.login_phone} underlayColor='transparent' activeOpacity={0.95} onPress={jumpAdList}>
               <Text>{'游戏列表>'}</Text>
-            </TouchableHighlight>
-            <TouchableHighlight style={styles.login_phone} underlayColor='transparent' activeOpacity={0.95} onPress={openapp}>
-              <Text>{'打开试玩>'}</Text>
-            </TouchableHighlight>                        
+            </TouchableHighlight>            
             <TouchableHighlight style={styles.login_phone} underlayColor='transparent' activeOpacity={0.95} onPress={jumpMine}>
               <Text>{'打开我的>'}</Text>
             </TouchableHighlight>                        
