@@ -26,11 +26,11 @@ import {
   ReloadInstructions,  
 } from 'react-native/Libraries/NewAppScreen';
 
-import appcfg from './appcfg';
+import duomofg from './duomofg';
 
 const {  OAIDUtil,DyAdApi } = NativeModules
 
-let uid = 'ddstar001';
+let uid = '1EW19NCT2WHH7PtJQaG0';
 
 function initOAID(){
   OAIDUtil.getDeviceID().then( resp => {
@@ -40,7 +40,7 @@ function initOAID(){
 }
 
 function initGame(){
-  DyAdApi.init(appcfg.appid, appcfg.secret, 'ddstar')
+  DyAdApi.init(duomofg.appid, duomofg.secret, 'ddstar')
 }
 
 function jumpAdList(){
@@ -49,6 +49,10 @@ function jumpAdList(){
 
 function openapp(){
   DyAdApi.jumpAdDetail(uid,100)
+}
+
+function jumpMine(){
+  DyAdApi.jumpMine(uid)
 }
 
 const App: () => React$Node = () => {
@@ -77,6 +81,9 @@ const App: () => React$Node = () => {
             </TouchableHighlight>
             <TouchableHighlight style={styles.login_phone} underlayColor='transparent' activeOpacity={0.95} onPress={openapp}>
               <Text>{'打开试玩>'}</Text>
+            </TouchableHighlight>                        
+            <TouchableHighlight style={styles.login_phone} underlayColor='transparent' activeOpacity={0.95} onPress={jumpMine}>
+              <Text>{'打开我的>'}</Text>
             </TouchableHighlight>                        
             <LearnMoreLinks />
           </View>
