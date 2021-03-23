@@ -32,6 +32,6 @@ repositories {
 
 dependencies {
     compile 'com.facebook.react:react-native:+'
-    implementation fileTree(dir: 'libs', include: ['dy-task-sdk-2.0.3.aar'])
+    implementation fileTree(dir: 'libs', include: ['*.aar'])
 }
   

@@ -15,8 +15,6 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.libs.palmmob.oaid.DeviceIdUtils;
-import com.libs.palmmob.oaid.MiitHelper;
 
 import org.json.JSONArray;
 
