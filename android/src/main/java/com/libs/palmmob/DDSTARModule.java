@@ -24,18 +24,18 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-public class RNReactNativePalmmobModule extends ReactContextBaseJavaModule {
+public class DDSTARModule extends ReactContextBaseJavaModule {
 
   private final ReactApplicationContext reactContext;
 
-  public RNReactNativePalmmobModule(ReactApplicationContext reactContext) {
+  public DDSTARModule(ReactApplicationContext reactContext) {
     super(reactContext);
     this.reactContext = reactContext;
   }
 
   @Override
   public String getName() {
-    return "RNReactNativePalmmob";
+    return "DDSTARModule";
   }
 
 /**
@@ -90,7 +90,7 @@ public class RNReactNativePalmmobModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public String openScanner() {
+  public String openWXScan() {
     try {
       Intent intent = new Intent();
       intent.setComponent(new ComponentName("com.tencent.mm", "com.tencent.mm.ui.LauncherUI"));
@@ -102,6 +102,21 @@ public class RNReactNativePalmmobModule extends ReactContextBaseJavaModule {
       return e.getMessage();
     }
     return "OK";
+  }
+
+  @ReactMethod
+  public void showSplash(final Callback successCallback) {
+    SplashScreen.show(getCurrentActivity());
+    successCallback.invoke();
+  }
+
+  /**
+   * 关闭启动屏
+   */
+  @ReactMethod
+  public void closeSplash(final Callback successCallback) {
+    SplashScreen.hide(getCurrentActivity());
+    successCallback.invoke();
   }
 
 }

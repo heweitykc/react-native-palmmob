@@ -36,7 +36,7 @@ public class DyAdApiModule extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "DyAdApi";
+    return "DyAdApiModule";
   }
 
   @ReactMethod
