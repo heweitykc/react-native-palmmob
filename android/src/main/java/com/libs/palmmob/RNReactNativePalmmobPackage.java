@@ -16,7 +16,7 @@ public class RNReactNativePalmmobPackage implements ReactPackage {
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
       return Arrays.<NativeModule>asList(
               new DDSTARModule(reactContext),
-              new DyAdApiModule(reactContext)
+              new DyAdModule(reactContext)
       );
     }
 

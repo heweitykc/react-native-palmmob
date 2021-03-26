@@ -23,13 +23,13 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
-public class DyAdApiModule extends ReactContextBaseJavaModule {
+public class DyAdModule extends ReactContextBaseJavaModule {
 
   public static Promise getDeviceIDPromise;
 
   private final ReactApplicationContext reactContext;
 
-  public DyAdApiModule(ReactApplicationContext reactContext) {
+  public DyAdModule(ReactApplicationContext reactContext) {
     super(reactContext);
     this.reactContext = reactContext;
   }

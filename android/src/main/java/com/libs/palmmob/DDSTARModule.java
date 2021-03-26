@@ -1,4 +1,3 @@
-
 package com.libs.palmmob;
 
 import android.app.Activity;
