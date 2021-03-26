@@ -1,9 +1,9 @@
 
 import { NativeModules } from 'react-native';
 
-const { RNReactNativePalmmob, DyAdModule } = NativeModules;
+const { DDSTARModule, DyAdModule } = NativeModules;
 
 export {    
     DyAdModule,
-    RNReactNativePalmmob
+    DDSTARModule
 } 
