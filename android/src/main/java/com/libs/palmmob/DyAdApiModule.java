@@ -42,36 +42,43 @@ public class DyAdApiModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void init(String mediaid, String secret, String channel, final Promise promise) {
     DyAdApi.getDyAdApi().init(reactContext, mediaid, secret, channel);
+    promise.resolve(true);
   }
 
   @ReactMethod
   public void jumpAdList(String userId, int advertType, final Promise promise) {
     DyAdApi.getDyAdApi().jumpAdList(reactContext, userId, advertType);
+    promise.resolve(true);
   }
 
   @ReactMethod
   public void jumpAdDetail(String userId, String advertType, final Promise promise) {
     DyAdApi.getDyAdApi().jumpAdDetail(reactContext, userId, advertType);
+    promise.resolve(true);
   }
 
   @ReactMethod
   public void setTitleBarColor(int color, final Promise promise) {
     DyAdApi.getDyAdApi().setTitleBarColor(color);
+    promise.resolve(true);
   }
 
   @ReactMethod
   public void setTitle(String title,  final Promise promise) {
     DyAdApi.getDyAdApi().setTitle(title);
+    promise.resolve(true);
   }
 
   @ReactMethod
   public void jumpMine(String userId, final Promise promise) {
     DyAdApi.getDyAdApi().jumpMine(reactContext, userId);
+    promise.resolve(true);
   }
 
   @ReactMethod
   public void getAdListFragment(String userId, int advertType, final Promise promise) {
     DyAdApi.getDyAdApi().getAdListFragment(userId, advertType);
+    promise.resolve(true);
   }
 
   @ReactMethod
