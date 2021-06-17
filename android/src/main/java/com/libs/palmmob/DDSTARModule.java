@@ -2,6 +2,8 @@ package com.libs.palmmob;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
@@ -13,6 +15,7 @@ import android.content.ComponentName;
 
 import androidx.annotation.NonNull;
 
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -118,4 +121,24 @@ public class DDSTARModule extends ReactContextBaseJavaModule {
     successCallback.invoke();
   }
 
+
+  @ReactMethod
+  public void getAppChannel(final Promise promise) {
+    String ch = DDSTARModule.getChannel(this.reactContext);
+    promise.resolve(ch);
+    return;
+  }
+
+  public static String getChannel(final Context context) {
+    String ch;
+    try {
+      ApplicationInfo ai = null;
+      ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
+      ch = ai.metaData.getString("JPUSH_CHANNEL");
+    } catch (PackageManager.NameNotFoundException e) {
+      //e.printStackTrace();
+      ch = "other";
+    }
+    return ch;
+  }
 }
