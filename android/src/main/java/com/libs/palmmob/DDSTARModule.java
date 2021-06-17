@@ -20,11 +20,16 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.UiThreadUtil;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ArrayList;
 
 import javax.annotation.Nullable;
+
+import com.hailong.appupdate.*;
 
 public class DDSTARModule extends ReactContextBaseJavaModule {
 
@@ -121,12 +126,32 @@ public class DDSTARModule extends ReactContextBaseJavaModule {
     successCallback.invoke();
   }
 
-
   @ReactMethod
   public void getAppChannel(final Promise promise) {
     String ch = DDSTARModule.getChannel(this.reactContext);
     promise.resolve(ch);
     return;
+  }
+
+  @ReactMethod
+  public void installAPK(final String apkUrl, final ReadableArray strarray, final boolean isForce, final Promise promise) {
+    final String[] array = new String[strarray.size()];
+    for (int i = 0; i < strarray.size(); i++) {
+      array[i] = strarray.getString(i);
+    }
+    final Activity activity1 = this.reactContext.getCurrentActivity();
+    UiThreadUtil.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          AppUpdateManager.Builder builder = new AppUpdateManager.Builder(activity1);
+          builder.apkUrl(apkUrl)
+                  .updateContent(array)
+                  .updateForce(isForce)
+                  .build();
+          promise.resolve(null);
+        }
+    });
+
   }
 
   public static String getChannel(final Context context) {
