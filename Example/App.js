@@ -16,6 +16,7 @@ import {
   TouchableHighlight,
   StatusBar,
   NativeModules,
+  PermissionsAndroid
 } from 'react-native';
 
 import {
@@ -28,7 +29,7 @@ import {
 
 import duomofg from './duomofg';
 
-const {  OAIDUtil,DyAdApi } = NativeModules
+const {  OAIDUtil,DyAdApi,XFYunLATModule } = NativeModules
 
 let uid = '1EW19NCT2WHH7PtJQaG0';
 
@@ -37,6 +38,34 @@ function initOAID(){
       console.log(resp)
     }
   );
+}
+
+const requestRecordAudioPermission = async () => {
+  try {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+      {
+        title: "Cool Photo App Camera Permission",
+        message:
+          "Cool Photo App needs access to your camera " +
+          "so you can take awesome pictures.",
+        buttonNeutral: "Ask Me Later",
+        buttonNegative: "Cancel",
+        buttonPositive: "OK"
+      }
+    );
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      console.log("You can use the camera");
+    } else {
+      console.log("Camera permission denied");
+    }
+  } catch (err) {
+    console.warn(err);
+  }
+};
+
+async function requestPermission(){
+  await requestRecordAudioPermission();
 }
 
 function initGame(){
@@ -49,6 +78,14 @@ function jumpAdList(){
 
 function jumpMine(){
   DyAdApi.jumpMine(uid)
+}
+
+function startRecord(){
+  XFYunLATModule.startRecord();
+}
+
+function stopRecord(){
+  XFYunLATModule.stopRecord();
 }
 
 const App: () => React$Node = () => {
@@ -66,6 +103,15 @@ const App: () => React$Node = () => {
             </View>
           )}
           <View style={styles.body}>
+          <TouchableHighlight style={styles.login_phone} underlayColor='transparent' activeOpacity={0.95} onPress={requestPermission}>
+              <Text>{'requestPermission'}</Text>
+            </TouchableHighlight>               
+          <TouchableHighlight style={styles.login_phone} underlayColor='transparent' activeOpacity={0.95} onPress={startRecord}>
+              <Text>{'startRecord'}</Text>
+            </TouchableHighlight>   
+            <TouchableHighlight style={styles.login_phone} underlayColor='transparent' activeOpacity={0.95} onPress={stopRecord}>
+              <Text>{'stopRecord'}</Text>
+            </TouchableHighlight>   
             <TouchableHighlight style={styles.login_phone} underlayColor='transparent' activeOpacity={0.95} onPress={initOAID}>
               <Text>{'测试OAID>'}</Text>
             </TouchableHighlight>   

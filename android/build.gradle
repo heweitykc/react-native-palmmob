@@ -18,11 +18,16 @@ android {
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 1
+        versionCode 100
         versionName "1.0"
     }
     lintOptions {
         abortOnError false
+    }
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
     }
 }
 
@@ -33,6 +38,6 @@ repositories {
 dependencies {
     implementation 'com.github.ZuoHailong:AppUpdate:0.2.6'
     compile 'com.facebook.react:react-native:+'
-    api fileTree(dir: 'libs', include: ['*.aar'])
+    api fileTree(dir: 'libs', include: ['*.jar','*.aar'])
 }
   
