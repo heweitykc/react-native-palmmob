@@ -15,9 +15,7 @@ public class RNReactNativePalmmobPackage implements ReactPackage {
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
       return Arrays.<NativeModule>asList(
-              new DDSTARModule(reactContext),
-              new XFYunLATModule(reactContext),
-              new DyAdModule(reactContext)
+              new DDSTARModule(reactContext)
       );
     }
 
