@@ -47,7 +47,7 @@ public class MainApplication extends Application implements ReactApplication {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
-      DDSTARModule.preInitUM(this.getApplicationContext(), "60dd7d7d26a57f101842592c", "android");
+      DDSTARModule.preInitUM(this.getApplicationContext());
   }
 
   /**

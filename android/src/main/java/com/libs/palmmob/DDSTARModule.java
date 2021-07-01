@@ -33,6 +33,9 @@ import com.umeng.commonsdk.UMConfigure;
 
 public class DDSTARModule extends ReactContextBaseJavaModule {
 
+  static final String CHANNEL_KEY = "APP_CHANNEL";
+  static final String UMAPP_KEY = "UM_APPKEY";
+
   private final ReactApplicationContext reactContext;
 
   public DDSTARModule(ReactApplicationContext reactContext) {
@@ -113,28 +116,31 @@ public class DDSTARModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void getAppChannel(final Promise promise) {
-    String ch = DDSTARModule.getChannel(this.reactContext);
+    String ch = DDSTARModule.getMetaVal(this.reactContext, "JPUSH_CHANNEL");
     promise.resolve(ch);
     return;
   }
 
   @ReactMethod
-  public void initUM(String appkey, String pushSecret, final Promise promise) {
-    String channel = this.getChannel(reactContext);
+  public void initUM(String pushSecret, final Promise promise) {
+    String channel = DDSTARModule.getMetaVal(this.reactContext, DDSTARModule.CHANNEL_KEY);
+    String appkey = DDSTARModule.getMetaVal(this.reactContext, DDSTARModule.UMAPP_KEY);
     UMConfigure.init(reactContext, appkey, channel, UMConfigure.DEVICE_TYPE_PHONE, pushSecret);
     promise.resolve(0);
   }
 
-  static public void preInitUM(Context context, String appkey, String channel){
+  static public void preInitUM(Context context){
+    String appkey = DDSTARModule.getMetaVal(context, DDSTARModule.UMAPP_KEY);
+    String channel = DDSTARModule.getMetaVal(context, DDSTARModule.CHANNEL_KEY);
     UMConfigure.preInit(context, appkey, channel);
   }
 
-  static public String getChannel(final Context context) {
+  static public String getMetaVal(final Context context, final String key) {
     String ch;
     try {
       ApplicationInfo ai = null;
       ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
-      ch = ai.metaData.getString("JPUSH_CHANNEL");
+      ch = ai.metaData.getString(key);
     } catch (PackageManager.NameNotFoundException e) {
       //e.printStackTrace();
       ch = "other";
