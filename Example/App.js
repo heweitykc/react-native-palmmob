@@ -29,7 +29,7 @@ import {
 
 import duomofg from './duomofg';
 
-const {  OAIDUtil,DyAdApi,XFYunLATModule } = NativeModules
+const {  DDSTARModule } = NativeModules
 
 let uid = '1EW19NCT2WHH7PtJQaG0';
 
@@ -38,6 +38,10 @@ function initOAID(){
       console.log(resp)
     }
   );
+}
+
+async function  initUM(){
+  await DDSTARModule.initUM("60dd7d7d26a57f101842592c",null);
 }
 
 const requestRecordAudioPermission = async () => {
@@ -103,6 +107,9 @@ const App: () => React$Node = () => {
             </View>
           )}
           <View style={styles.body}>
+          <TouchableHighlight style={styles.login_phone} underlayColor='transparent' activeOpacity={0.95} onPress={initUM}>
+              <Text>{'initUM'}</Text>
+            </TouchableHighlight>     
           <TouchableHighlight style={styles.login_phone} underlayColor='transparent' activeOpacity={0.95} onPress={requestPermission}>
               <Text>{'requestPermission'}</Text>
             </TouchableHighlight>               

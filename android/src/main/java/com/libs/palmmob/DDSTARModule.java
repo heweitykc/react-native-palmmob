@@ -29,6 +29,8 @@ import java.util.ArrayList;
 
 import javax.annotation.Nullable;
 
+import com.umeng.commonsdk.UMConfigure;
+
 public class DDSTARModule extends ReactContextBaseJavaModule {
 
   private final ReactApplicationContext reactContext;
@@ -116,7 +118,18 @@ public class DDSTARModule extends ReactContextBaseJavaModule {
     return;
   }
 
-  public static String getChannel(final Context context) {
+  @ReactMethod
+  public void initUM(String appkey, String pushSecret, final Promise promise) {
+    String channel = this.getChannel(reactContext);
+    UMConfigure.init(reactContext, appkey, channel, UMConfigure.DEVICE_TYPE_PHONE, pushSecret);
+    promise.resolve(0);
+  }
+
+  static public void preInitUM(Context context, String appkey, String channel){
+    UMConfigure.preInit(context, appkey, channel);
+  }
+
+  static public String getChannel(final Context context) {
     String ch;
     try {
       ApplicationInfo ai = null;
