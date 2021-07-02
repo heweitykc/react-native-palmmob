@@ -116,7 +116,7 @@ public class DDSTARModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void getAppChannel(final Promise promise) {
-    String ch = DDSTARModule.getMetaVal(this.reactContext, "JPUSH_CHANNEL");
+    String ch = DDSTARModule.getMetaVal(this.reactContext, DDSTARModule.CHANNEL_KEY);
     promise.resolve(ch);
     return;
   }
