@@ -1,8 +1,9 @@
 
 import { NativeModules } from 'react-native';
 
-const { DDSTARModule } = NativeModules;
+const { DDSTARModule, UMAnalyticsModule } = NativeModules;
 
 export {        
-    DDSTARModule
+    DDSTARModule,
+    UMAnalyticsModule
 } 

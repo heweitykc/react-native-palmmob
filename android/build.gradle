@@ -45,9 +45,9 @@ dependencies {
     implementation "com.umeng.umsdk:asms:1.4.1"
     implementation "com.umeng.umsdk:apm:1.4.2"
 
-    implementation  'com.umeng.umsdk:oaid_lenovo:latest.integration'
-    implementation  'com.umeng.umsdk:oaid_mi:latest.integration'
-    implementation  'com.umeng.umsdk:oaid_oppo:latest.integration'
-    implementation  'com.umeng.umsdk:oaid_vivo:latest.integration'
+    // implementation  'com.umeng.umsdk:oaid_lenovo:latest.integration'
+    // implementation  'com.umeng.umsdk:oaid_mi:latest.integration'
+    // implementation  'com.umeng.umsdk:oaid_oppo:latest.integration'
+    // implementation  'com.umeng.umsdk:oaid_vivo:latest.integration'
 }
   

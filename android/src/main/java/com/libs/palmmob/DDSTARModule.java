@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import javax.annotation.Nullable;
 
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.umeng.commonsdk.UMConfigure;
 
 public class DDSTARModule extends ReactContextBaseJavaModule {
@@ -126,6 +127,7 @@ public class DDSTARModule extends ReactContextBaseJavaModule {
     String channel = DDSTARModule.getMetaVal(this.reactContext, DDSTARModule.CHANNEL_KEY);
     String appkey = DDSTARModule.getMetaVal(this.reactContext, DDSTARModule.UMAPP_KEY);
     UMConfigure.init(reactContext, appkey, channel, UMConfigure.DEVICE_TYPE_PHONE, pushSecret);
+    UMConfigure.setLogEnabled(ReactBuildConfig.DEBUG);
     promise.resolve(0);
   }
 
