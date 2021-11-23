@@ -69,16 +69,19 @@ public class DDSTARModule extends ReactContextBaseJavaModule {
     return  constants;
   }
 
-  /**
-   * 这里暴露一个方法给 React Native
-   *
-   * 在JS中使用方式为：
-   *
-   * NativeModules.RNToast.show(msg, duration); // duration 可以使用上面 getConstants 方法暴露出来的常量
-   *
-   * @param msg
-   * @param duration
-   */
+  @ReactMethod
+  public void getCallState(final Promise promise) {
+    try {
+      TelephonyManager mTelephonyManager = (TelephonyManager) this.reactContext.getSystemService(Context.TELEPHONY_SERVICE);
+      int state = mTelephonyManager.getCallState();
+      promise.resolve(state);
+      return;
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    promise.resolve(0);
+  }
+  
   @ReactMethod
   public void show( String msg, int duration ){
     Toast.makeText(getReactApplicationContext(), msg, duration).show();
@@ -149,4 +152,5 @@ public class DDSTARModule extends ReactContextBaseJavaModule {
     }
     return ch;
   }
+  
 }
