@@ -1,365 +1,162 @@
-package com.dooboolab.audiorecorderplayer
+package com.libs.palmmob;
 
-import android.Manifest
-import android.content.pm.PackageManager
-import android.media.MediaPlayer
-import android.media.MediaRecorder
-import android.net.Uri
-import android.os.Build
-import android.os.Handler
-import android.os.Looper
-import android.os.SystemClock
-import android.util.Log
-import androidx.core.app.ActivityCompat
-import com.facebook.react.bridge.*
-import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter
-import com.facebook.react.modules.core.PermissionListener
-import java.io.IOException
-import java.util.*
-import kotlin.math.log10
+import android.app.Activity;
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.telephony.TelephonyManager;
+import android.util.Log;
+import android.widget.Toast;
+import android.content.ClipboardManager;
+import android.content.ClipData;
+import android.text.TextUtils;
+import android.content.Intent;
+import android.content.ComponentName;
 
-class RNAudioRecorderPlayerModule(private val reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext), PermissionListener {
-    private var audioFileURL = ""
-    private var subsDurationMillis = 500
-    private var _meteringEnabled = false
-    private var mediaRecorder: MediaRecorder? = null
-    private var mediaPlayer: MediaPlayer? = null
-    private var recorderRunnable: Runnable? = null
-    private var mTask: TimerTask? = null
-    private var mTimer: Timer? = null
-    private var pausedRecordTime = 0L
-    private var totalPausedRecordTime = 0L
-    var recordHandler: Handler? = Handler(Looper.getMainLooper())
-    override fun getName(): String {
-        return tag
+
+import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReactMethod;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ArrayList;
+
+import javax.annotation.Nullable;
+
+import com.facebook.react.common.build.ReactBuildConfig;
+import com.umeng.commonsdk.UMConfigure;
+
+public class DDSTARModule extends ReactContextBaseJavaModule {
+
+  static final String CHANNEL_KEY = "APP_CHANNEL";
+  static final String UMAPP_KEY = "UM_APPKEY";
+
+  private final ReactApplicationContext reactContext;
+
+  public DDSTARModule(ReactApplicationContext reactContext) {
+    super(reactContext);
+    this.reactContext = reactContext;
+  }
+
+  @Override
+  public String getName() {
+    return "DDSTARModule";
+  }
+
+/**
+   * 这里返回的值会被JS模块当做常量来使用
+   * 使用方式为
+   *
+   * NativeModules.RNToast.SHORT === Toast.LENGTH_SHORT
+   * NativeModules.RNToast.LONG === Toast.LENGTH_LONG
+   *
+   * @return
+   */
+  @Nullable
+  @Override
+  public Map<String, Object> getConstants() {
+    final Map<String, Object> constants = new HashMap<>();
+
+    constants.put("SHORT", Toast.LENGTH_SHORT);
+    constants.put("LONG", Toast.LENGTH_LONG);
+
+    return  constants;
+  }
+
+  /**
+   * 这里暴露一个方法给 React Native
+   *
+   * 在JS中使用方式为：
+   *
+   * NativeModules.RNToast.show(msg, duration); // duration 可以使用上面 getConstants 方法暴露出来的常量
+   *
+   * @param msg
+   * @param duration
+   */
+  @ReactMethod
+  public void show( String msg, int duration ){
+    Toast.makeText(getReactApplicationContext(), msg, duration).show();
+  }
+
+  @ReactMethod
+  public void getCallState(final Promise promise) {
+    try {
+      TelephonyManager mTelephonyManager = (TelephonyManager) this.reactContext.getSystemService(Context.TELEPHONY_SERVICE);
+      int state = mTelephonyManager.getCallState();
+      promise.resolve(state);
+      return;
+    } catch (Exception e) {
+      e.printStackTrace();
     }
+    promise.resolve(0);
+  }
 
-    @ReactMethod
-    fun startRecorder(path: String, audioSet: ReadableMap?, meteringEnabled: Boolean, promise: Promise) {
-        // try {
-        //     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-        //             (ActivityCompat.checkSelfPermission(reactContext, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
-        //             ActivityCompat.checkSelfPermission(reactContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-        //         ActivityCompat.requestPermissions((currentActivity)!!, arrayOf(
-        //                 Manifest.permission.RECORD_AUDIO,
-        //                 Manifest.permission.WRITE_EXTERNAL_STORAGE), 0)
-        //         promise.reject("No permission granted.", "Try again after adding permission.")
-        //         return
-        //     }
-        // } catch (ne: NullPointerException) {
-        //     Log.w(tag, ne.toString())
-        //     promise.reject("No permission granted.", "Try again after adding permission.")
-        //     return
-        // }
-        audioFileURL = if (((path == "DEFAULT"))) "${reactContext.cacheDir}/$defaultFileName" else path
-        _meteringEnabled = meteringEnabled
-
-        if (mediaRecorder == null) {
-            mediaRecorder = MediaRecorder()
+  @ReactMethod
+  public String getCopyData(){
+    Activity currentActivity = getReactApplicationContext().getCurrentActivity();
+    ClipboardManager manager = (ClipboardManager) currentActivity.getSystemService(reactContext.CLIPBOARD_SERVICE);
+    if (manager != null) {
+      if (manager.hasPrimaryClip() && manager.getPrimaryClip().getItemCount() > 0) {
+        CharSequence addedText = manager.getPrimaryClip().getItemAt(0).getText();
+        String addedTextString = String.valueOf(addedText);
+        if (!TextUtils.isEmpty(addedTextString)) {
+          return addedTextString;
         }
-
-        if (audioSet != null) {
-            mediaRecorder!!.setAudioSource(if (audioSet.hasKey("AudioSourceAndroid")) audioSet.getInt("AudioSourceAndroid") else MediaRecorder.AudioSource.MIC)
-            mediaRecorder!!.setOutputFormat(if (audioSet.hasKey("OutputFormatAndroid")) audioSet.getInt("OutputFormatAndroid") else MediaRecorder.OutputFormat.MPEG_4)
-            mediaRecorder!!.setAudioEncoder(if (audioSet.hasKey("AudioEncoderAndroid")) audioSet.getInt("AudioEncoderAndroid") else MediaRecorder.AudioEncoder.AAC)
-            mediaRecorder!!.setAudioSamplingRate(if (audioSet.hasKey("AudioSamplingRateAndroid")) audioSet.getInt("AudioSamplingRateAndroid") else 48000)
-            mediaRecorder!!.setAudioEncodingBitRate(if (audioSet.hasKey("AudioEncodingBitRateAndroid")) audioSet.getInt("AudioEncodingBitRateAndroid") else 128000)
-        } else {
-            mediaRecorder!!.setAudioSource(MediaRecorder.AudioSource.MIC)
-            mediaRecorder!!.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-            mediaRecorder!!.setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
-            mediaRecorder!!.setAudioEncodingBitRate(128000)
-            mediaRecorder!!.setAudioSamplingRate(48000)
-        }
-        mediaRecorder!!.setOutputFile(audioFileURL)
-
-        try {
-            mediaRecorder!!.prepare()
-            totalPausedRecordTime = 0L
-            mediaRecorder!!.start()
-            val systemTime = SystemClock.elapsedRealtime()
-            recorderRunnable = object : Runnable {
-                override fun run() {
-                    val time = SystemClock.elapsedRealtime() - systemTime - totalPausedRecordTime
-                    val obj = Arguments.createMap()
-                    obj.putDouble("currentPosition", time.toDouble())
-                    if (_meteringEnabled) {
-                        var maxAmplitude = 0
-                        if (mediaRecorder != null) {
-                            maxAmplitude = mediaRecorder!!.maxAmplitude
-                        }
-                        var dB = -160.0
-                        val maxAudioSize = 32767.0
-                        if (maxAmplitude > 0) {
-                            dB = 20 * log10(maxAmplitude / maxAudioSize)
-                        }
-                        obj.putInt("currentMetering", dB.toInt())
-                    }
-                    sendEvent(reactContext, "rn-recordback", obj)
-                    recordHandler!!.postDelayed(this, subsDurationMillis.toLong())
-                }
-            }
-            (recorderRunnable as Runnable).run()
-            promise.resolve("file:///$audioFileURL")
-        } catch (e: Exception) {
-            Log.e(tag, "Exception: ", e)
-            promise.reject("startRecord", e.message)
-        }
+      }
     }
+    return "";
+  }
 
-    @ReactMethod
-    fun resumeRecorder(promise: Promise) {
-        if (mediaRecorder == null) {
-            promise.reject("resumeReocrder", "Recorder is null.")
-            return
-        }
-
-        try {
-            mediaRecorder!!.resume()
-            totalPausedRecordTime += SystemClock.elapsedRealtime() - pausedRecordTime;
-            recorderRunnable?.let { recordHandler!!.postDelayed(it, subsDurationMillis.toLong()) }
-            promise.resolve("Recorder resumed.")
-        } catch (e: Exception) {
-            Log.e(tag, "Recorder resume: " + e.message)
-            promise.reject("resumeRecorder", e.message)
-        }
+  @ReactMethod
+  public String openWXScan() {
+    try {
+      Intent intent = new Intent();
+      intent.setComponent(new ComponentName("com.tencent.mm", "com.tencent.mm.ui.LauncherUI"));
+      intent.putExtra("LauncherUI.From.Scaner.Shortcut", true);
+      intent.setFlags(335544320);
+      intent.setAction("android.intent.action.VIEW");
+      reactContext.startActivity(intent);
+    } catch (Exception e) {
+      return e.getMessage();
     }
+    return "OK";
+  }
 
-    @ReactMethod
-    fun pauseRecorder(promise: Promise) {
-        if (mediaRecorder == null) {
-            promise.reject("pauseRecorder", "Recorder is null.")
-            return
-        }
+  @ReactMethod
+  public void getAppChannel(final Promise promise) {
+    String ch = DDSTARModule.getMetaVal(this.reactContext, DDSTARModule.CHANNEL_KEY);
+    promise.resolve(ch);
+    return;
+  }
 
-        try {
-            mediaRecorder!!.pause()
-            pausedRecordTime = SystemClock.elapsedRealtime();
-            recorderRunnable?.let { recordHandler!!.removeCallbacks(it) };
-            promise.resolve("Recorder paused.")
-        } catch (e: Exception) {
-            Log.e(tag, "pauseRecorder exception: " + e.message)
-            promise.reject("pauseRecorder", e.message)
-        }
+  @ReactMethod
+  public void initUM(String pushSecret, final Promise promise) {
+    String channel = DDSTARModule.getMetaVal(this.reactContext, DDSTARModule.CHANNEL_KEY);
+    String appkey = DDSTARModule.getMetaVal(this.reactContext, DDSTARModule.UMAPP_KEY);
+    UMConfigure.init(reactContext, appkey, channel, UMConfigure.DEVICE_TYPE_PHONE, pushSecret);
+    UMConfigure.setLogEnabled(ReactBuildConfig.DEBUG);
+    promise.resolve(0);
+  }
+
+  static public void preInitUM(Context context){
+    String appkey = DDSTARModule.getMetaVal(context, DDSTARModule.UMAPP_KEY);
+    String channel = DDSTARModule.getMetaVal(context, DDSTARModule.CHANNEL_KEY);
+    UMConfigure.preInit(context, appkey, channel);
+  }
+
+  static public String getMetaVal(final Context context, final String key) {
+    String ch;
+    try {
+      ApplicationInfo ai = null;
+      ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
+      ch = ai.metaData.getString(key);
+    } catch (PackageManager.NameNotFoundException e) {
+      //e.printStackTrace();
+      ch = "other";
     }
-
-    @ReactMethod
-    fun stopRecorder(promise: Promise) {
-        if (recordHandler != null) {
-            recorderRunnable?.let { recordHandler!!.removeCallbacks(it) }
-        }
-
-        if (mediaRecorder == null) {
-            promise.reject("stopRecord", "recorder is null.")
-            return
-        }
-
-        try {
-            mediaRecorder!!.stop()
-        } catch (stopException: RuntimeException) {
-            stopException.message?.let { Log.d(tag,"" + it) }
-            promise.reject("stopRecord", stopException.message)
-        }
-
-        mediaRecorder!!.release()
-        mediaRecorder = null
-        promise.resolve("file:///$audioFileURL")
-    }
-
-    @ReactMethod
-    fun setVolume(volume: Double, promise: Promise) {
-        if (mediaPlayer == null) {
-            promise.reject("setVolume", "player is null.")
-            return
-        }
-
-        val mVolume = volume.toFloat()
-        mediaPlayer!!.setVolume(mVolume, mVolume)
-        promise.resolve("set volume")
-    }
-
-    @ReactMethod
-    fun startPlayer(path: String, httpHeaders: ReadableMap?, promise: Promise) {
-        if (mediaPlayer != null) {
-            val isPaused = !mediaPlayer!!.isPlaying && mediaPlayer!!.currentPosition > 1
-
-            if (isPaused) {
-                mediaPlayer!!.start()
-                promise.resolve("player resumed.")
-                return
-            }
-
-            Log.e(tag, "Player is already running. Stop it first.")
-            promise.reject("startPlay", "Player is already running. Stop it first.")
-            return
-        } else {
-            mediaPlayer = MediaPlayer()
-        }
-
-        try {
-            if ((path == "DEFAULT")) {
-                mediaPlayer!!.setDataSource("${reactContext.cacheDir}/$defaultFileName")
-            } else {
-                if (httpHeaders != null) {
-                    val headers: MutableMap<String, String?> = HashMap<String, String?>()
-                    val iterator = httpHeaders.keySetIterator()
-                    while (iterator.hasNextKey()) {
-                        val key = iterator.nextKey()
-                        headers.put(key, httpHeaders.getString(key))
-                    }
-                    mediaPlayer!!.setDataSource(currentActivity!!.applicationContext, Uri.parse(path), headers)
-                } else {
-                    mediaPlayer!!.setDataSource(path)
-                }
-            }
-
-            mediaPlayer!!.setOnPreparedListener { mp ->
-                Log.d(tag, "mediaplayer prepared and start")
-                mp.start()
-                /**
-                 * Set timer task to send event to RN.
-                 */
-                mTask = object : TimerTask() {
-                    override fun run() {
-                        val obj = Arguments.createMap()
-                        obj.putInt("duration", mp.duration)
-                        obj.putInt("currentPosition", mp.currentPosition)
-                        sendEvent(reactContext, "rn-playback", obj)
-                    }
-                }
-
-                mTimer = Timer()
-                mTimer!!.schedule(mTask, 0, subsDurationMillis.toLong())
-                val resolvedPath = if (((path == "DEFAULT"))) "${reactContext.cacheDir}/$defaultFileName" else path
-                promise.resolve(resolvedPath)
-            }
-
-            /**
-             * Detect when finish playing.
-             */
-            mediaPlayer!!.setOnCompletionListener { mp ->
-                /**
-                 * Send last event
-                 */
-                val obj = Arguments.createMap()
-                obj.putInt("duration", mp.duration)
-                obj.putInt("currentPosition", mp.duration)
-                sendEvent(reactContext, "rn-playback", obj)
-                /**
-                 * Reset player.
-                 */
-                Log.d(tag, "Plays completed.")
-                mTimer!!.cancel()
-                mp.stop()
-                mp.release()
-                mediaPlayer = null
-            }
-
-            mediaPlayer!!.prepare()
-        } catch (e: IOException) {
-            Log.e(tag, "startPlay() io exception")
-            promise.reject("startPlay", e.message)
-        } catch (e: NullPointerException) {
-            Log.e(tag, "startPlay() null exception")
-        }
-    }
-
-    @ReactMethod
-    fun resumePlayer(promise: Promise) {
-        if (mediaPlayer == null) {
-            promise.reject("resume", "mediaPlayer is null on resume.")
-            return
-        }
-
-        if (mediaPlayer!!.isPlaying) {
-            promise.reject("resume", "mediaPlayer is already running.")
-            return
-        }
-
-        try {
-            mediaPlayer!!.seekTo(mediaPlayer!!.currentPosition)
-            mediaPlayer!!.start()
-            promise.resolve("resume player")
-        } catch (e: Exception) {
-            Log.e(tag, "mediaPlayer resume: " + e.message)
-            promise.reject("resume", e.message)
-        }
-    }
-
-    @ReactMethod
-    fun pausePlayer(promise: Promise) {
-        if (mediaPlayer == null) {
-            promise.reject("pausePlay", "mediaPlayer is null on pause.")
-            return
-        }
-
-        try {
-            mediaPlayer!!.pause()
-            promise.resolve("pause player")
-        } catch (e: Exception) {
-            Log.e(tag, "pausePlay exception: " + e.message)
-            promise.reject("pausePlay", e.message)
-        }
-    }
-
-    @ReactMethod
-    fun seekToPlayer(time: Double, promise: Promise) {
-        if (mediaPlayer == null) {
-            promise.reject("seekTo", "mediaPlayer is null on seek.")
-            return
-        }
-
-        mediaPlayer!!.seekTo(time.toInt())
-        promise.resolve("pause player")
-    }
-
-    private fun sendEvent(reactContext: ReactContext,
-                          eventName: String,
-                          params: WritableMap?) {
-        reactContext
-                .getJSModule<RCTDeviceEventEmitter>(RCTDeviceEventEmitter::class.java)
-                .emit(eventName, params)
-    }
-
-    @ReactMethod
-    fun stopPlayer(promise: Promise) {
-        if (mTimer != null) {
-            mTimer!!.cancel()
-        }
-
-        if (mediaPlayer == null) {
-            promise.resolve("Already stopped player")
-            return
-        }
-
-        try {
-            mediaPlayer!!.release()
-            mediaPlayer = null
-            promise.resolve("stopped player")
-        } catch (e: Exception) {
-            Log.e(tag, "stopPlay exception: " + e.message)
-            promise.reject("stopPlay", e.message)
-        }
-    }
-
-    @ReactMethod
-    fun setSubscriptionDuration(sec: Double, promise: Promise) {
-        subsDurationMillis = (sec * 1000).toInt()
-        promise.resolve("setSubscriptionDuration: $subsDurationMillis")
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray): Boolean {
-        var requestRecordAudioPermission: Int = 200
-
-        when (requestCode) {
-            requestRecordAudioPermission -> if (grantResults[0] == PackageManager.PERMISSION_GRANTED) return true
-        }
-
-        return false
-    }
-
-    companion object {
-        private var tag = "RNAudioRecorderPlayer"
-        private var defaultFileName = "sound.mp4"
-    }
+    return ch;
+  }
 }
