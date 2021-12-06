@@ -3,6 +3,7 @@ package com.libs.palmmob;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.telephony.TelephonyManager;
@@ -125,10 +126,38 @@ public class DDSTARModule extends ReactContextBaseJavaModule {
     return "OK";
   }
 
+  private PackageInfo getPackageInfo() throws Exception {
+    return getReactApplicationContext().getPackageManager().getPackageInfo(getReactApplicationContext().getPackageName(), 0);
+  }
+
   @ReactMethod
   public void getAppChannel(final Promise promise) {
     String ch = DDSTARModule.getMetaVal(this.reactContext, DDSTARModule.CHANNEL_KEY);
     promise.resolve(ch);
+    return;
+  }
+
+  @ReactMethod
+  public void getAppName(final Promise promise) {
+    String appName = "unknown";
+    try {
+      appName = getReactApplicationContext().getApplicationInfo().loadLabel(getReactApplicationContext().getPackageManager()).toString();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    promise.resolve(appName);
+    return;
+  }
+
+  @ReactMethod
+  public void getAppBuild(final Promise promise) {
+    String buildNumber = "unknown";
+    try {
+      buildNumber = Integer.toString(getPackageInfo().versionCode);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    promise.resolve(buildNumber);
     return;
   }
 
