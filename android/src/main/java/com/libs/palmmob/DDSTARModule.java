@@ -33,6 +33,7 @@ import com.umeng.commonsdk.UMConfigure;
 public class DDSTARModule extends ReactContextBaseJavaModule {
 
   static final String CHANNEL_KEY = "APP_CHANNEL";
+    static final String APP_AREA = "APP_AREA";
   static final String UMAPP_KEY = "UM_APPKEY";
 
   private final ReactApplicationContext reactContext;
@@ -158,6 +159,13 @@ public class DDSTARModule extends ReactContextBaseJavaModule {
       e.printStackTrace();
     }
     promise.resolve(buildNumber);
+    return;
+  }
+
+  @ReactMethod
+  public void getAppArea(final Promise promise) {
+    String ch = DDSTARModule.getMetaVal(this.reactContext, DDSTARModule.APP_AREA);
+    promise.resolve(ch);
     return;
   }
 
