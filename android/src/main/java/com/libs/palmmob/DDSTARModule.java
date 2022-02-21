@@ -5,7 +5,9 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Build;
+import android.os.LocaleList;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -22,6 +24,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.ArrayList;
 
@@ -167,6 +170,25 @@ public class DDSTARModule extends ReactContextBaseJavaModule {
     String ch = DDSTARModule.getMetaVal(this.reactContext, DDSTARModule.APP_AREA);
     promise.resolve(ch);
     return;
+  }
+
+  @ReactMethod
+  public void getLanguage(final Promise promise) {
+    Locale locale = this.getLocale();
+    String language = locale.toString();
+    promise.resolve(language);
+  }
+
+  Locale getLocale() {
+    Configuration config = getReactApplicationContext()
+            .getResources()
+            .getConfiguration();
+
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+      return config.locale;
+    }
+    LocaleList list = config.getLocales();
+    return list.get(0);
   }
 
   @ReactMethod
