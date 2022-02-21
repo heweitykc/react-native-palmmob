@@ -11,6 +11,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.bridge.JavaScriptModule;
 
+import com.libs.palmmob.googlepay.GooglePayModule;
 import com.libs.palmmob.um.AnalyticsModule;
 
 public class RNReactNativePalmmobPackage implements ReactPackage {
@@ -18,6 +19,7 @@ public class RNReactNativePalmmobPackage implements ReactPackage {
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
       return Arrays.<NativeModule>asList(
         new AnalyticsModule(reactContext),
+        new GooglePayModule(reactContext),
         new DDSTARModule(reactContext)
       );
     }
