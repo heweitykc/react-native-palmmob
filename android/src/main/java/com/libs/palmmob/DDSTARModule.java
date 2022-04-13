@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import javax.annotation.Nullable;
 
 import com.facebook.react.common.build.ReactBuildConfig;
-import com.umeng.commonsdk.UMConfigure;
+import com.palmmob3.globallibs.Utils;
 
 public class DDSTARModule extends ReactContextBaseJavaModule {
 
@@ -136,20 +136,13 @@ public class DDSTARModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void getAppChannel(final Promise promise) {
-    String ch = DDSTARModule.getMetaVal(this.reactContext, DDSTARModule.CHANNEL_KEY);
-    promise.resolve(ch);
+    promise.resolve(Utils.getAppChannel(reactContext));
     return;
   }
 
   @ReactMethod
   public void getAppName(final Promise promise) {
-    String appName = "unknown";
-    try {
-      appName = getReactApplicationContext().getApplicationInfo().loadLabel(getReactApplicationContext().getPackageManager()).toString();
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    promise.resolve(appName);
+    promise.resolve(Utils.getAppName(reactContext));
     return;
   }
 
@@ -167,55 +160,23 @@ public class DDSTARModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void getAppArea(final Promise promise) {
-    String ch = DDSTARModule.getMetaVal(this.reactContext, DDSTARModule.APP_AREA);
-    promise.resolve(ch);
-    return;
+    promise.resolve("");
   }
 
   @ReactMethod
   public void getLanguage(final Promise promise) {
-    Locale locale = this.getLocale();
-    String language = locale.toString();
-    promise.resolve(language);
-  }
-
-  Locale getLocale() {
-    Configuration config = getReactApplicationContext()
-            .getResources()
-            .getConfiguration();
-
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-      return config.locale;
-    }
-    LocaleList list = config.getLocales();
-    return list.get(0);
+    promise.resolve(Utils.getLanguage(reactContext));
   }
 
   @ReactMethod
   public void initUM(String pushSecret, final Promise promise) {
-    String channel = DDSTARModule.getMetaVal(this.reactContext, DDSTARModule.CHANNEL_KEY);
-    String appkey = DDSTARModule.getMetaVal(this.reactContext, DDSTARModule.UMAPP_KEY);
-    UMConfigure.init(reactContext, appkey, channel, UMConfigure.DEVICE_TYPE_PHONE, pushSecret);
-    UMConfigure.setLogEnabled(ReactBuildConfig.DEBUG);
+    String appkey = Utils.getMetaVal(reactContext, DDSTARModule.UMAPP_KEY);
+    Utils.initUM(reactContext, appkey);
     promise.resolve(0);
   }
 
   static public void preInitUM(Context context){
-    String appkey = DDSTARModule.getMetaVal(context, DDSTARModule.UMAPP_KEY);
-    String channel = DDSTARModule.getMetaVal(context, DDSTARModule.CHANNEL_KEY);
-    UMConfigure.preInit(context, appkey, channel);
-  }
-
-  static public String getMetaVal(final Context context, final String key) {
-    String ch;
-    try {
-      ApplicationInfo ai = null;
-      ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
-      ch = ai.metaData.getString(key);
-    } catch (PackageManager.NameNotFoundException e) {
-      //e.printStackTrace();
-      ch = "other";
-    }
-    return ch;
+    String appkey = Utils.getMetaVal(context, DDSTARModule.UMAPP_KEY);
+    Utils.preInitUM(context, appkey);
   }
 }
