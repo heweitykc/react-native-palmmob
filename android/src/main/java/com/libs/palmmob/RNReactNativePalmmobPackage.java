@@ -11,8 +11,6 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.bridge.JavaScriptModule;
 
-import com.libs.palmmob.admob.AdMobModule;
-import com.libs.palmmob.googlepay.GooglePayModule;
 import com.libs.palmmob.um.AnalyticsModule;
 import com.libs.palmmob.updater.UpdaterModule;
 
@@ -21,8 +19,6 @@ public class RNReactNativePalmmobPackage implements ReactPackage {
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
       return Arrays.<NativeModule>asList(
         new AnalyticsModule(reactContext),
-        new GooglePayModule(reactContext),
-        new AdMobModule(reactContext),
         new UpdaterModule(reactContext),
         new DDSTARModule(reactContext)
       );

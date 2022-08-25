@@ -1,22 +1,14 @@
 package com.libs.palmmob;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.res.Configuration;
-import android.os.Build;
-import android.os.LocaleList;
-import android.telephony.TelephonyManager;
-import android.util.Log;
-import android.widget.Toast;
 import android.content.ClipboardManager;
-import android.content.ClipData;
-import android.text.TextUtils;
-import android.content.Intent;
 import android.content.ComponentName;
-
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.telephony.TelephonyManager;
+import android.text.TextUtils;
+import android.widget.Toast;
 
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -24,14 +16,9 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
-import java.util.ArrayList;
 
 import javax.annotation.Nullable;
-
-import com.facebook.react.common.build.ReactBuildConfig;
-import com.palmmob3.globallibs.Utils;
 
 public class DDSTARModule extends ReactContextBaseJavaModule {
 
@@ -136,13 +123,12 @@ public class DDSTARModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void getAppChannel(final Promise promise) {
-    promise.resolve(Utils.getAppChannel(reactContext));
-    return;
+    promise.resolve(com.palmmob3.globallibs.AppUtil.getAppChannel(reactContext));
   }
 
   @ReactMethod
   public void getAppName(final Promise promise) {
-    promise.resolve(Utils.getAppName(reactContext));
+    promise.resolve("");
     return;
   }
 
@@ -165,18 +151,16 @@ public class DDSTARModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void getLanguage(final Promise promise) {
-    promise.resolve(Utils.getLanguage(reactContext));
+    promise.resolve(com.palmmob3.globallibs.AppUtil.getLanguage(reactContext));
   }
 
   @ReactMethod
   public void initUM(String pushSecret, final Promise promise) {
-    String appkey = Utils.getMetaVal(reactContext, DDSTARModule.UMAPP_KEY);
-    Utils.initUM(reactContext, appkey);
+    com.palmmob3.globallibs.AppUtil.initUM(reactContext);
     promise.resolve(0);
   }
 
   static public void preInitUM(Context context){
-    String appkey = Utils.getMetaVal(context, DDSTARModule.UMAPP_KEY);
-    Utils.preInitUM(context, appkey);
+    com.palmmob3.globallibs.AppUtil.preInitUM(context);
   }
 }

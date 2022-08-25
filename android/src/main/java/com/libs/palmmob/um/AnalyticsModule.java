@@ -11,7 +11,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
-import com.palmmob3.globallibs.Utils;
+import com.palmmob3.globallibs.AppUtil;
 
 
 public class AnalyticsModule extends ReactContextBaseJavaModule {
@@ -29,7 +29,7 @@ public class AnalyticsModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void onEvent(String eventId) {
-        Utils.umEvent(context, eventId);
+        AppUtil.umEvent(context, eventId);
     }
 
     @ReactMethod
@@ -50,7 +50,7 @@ public class AnalyticsModule extends ReactContextBaseJavaModule {
                 rMap.put(key, map.getMap(key).toString());
             }
         }
-        Utils.umEventWithMap(context, eventId, rMap);
+        AppUtil.umEventWithMap(context, eventId, rMap);
     }
 
 

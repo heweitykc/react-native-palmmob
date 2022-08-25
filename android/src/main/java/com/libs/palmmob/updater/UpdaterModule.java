@@ -7,14 +7,12 @@ import androidx.annotation.NonNull;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.palmmob3.globallibs.ad.admob.AdMob;
 import com.palmmob3.globallibs.updater.GlobalUpdater;
 
 
 public class UpdaterModule extends ReactContextBaseJavaModule {
 
     ReactApplicationContext reactContext;
-    AdMob admob;
 
     @NonNull
     @Override
